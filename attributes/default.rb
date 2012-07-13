@@ -23,18 +23,31 @@
 default['nginx']['version'] = "1.0.14"
 default['nginx']['dir'] = "/etc/nginx"
 default['nginx']['log_dir'] = "/var/log/nginx"
-default['nginx']['binary'] = "/usr/sbin/nginx"
+
 
 case node['platform']
 when "debian","ubuntu"
   default['nginx']['user']       = "www-data"
   default['nginx']['init_style'] = "runit"
+  default['nginx']['worker_processes']   = cpu['total']
+  default['nginx']['binary'] = "/usr/sbin/nginx"
+  default['nginx']['sbin'] = "/usr/sbin/"
 when "redhat","centos","scientific","amazon","oracle","fedora"
   default['nginx']['user']       = "nginx"
   default['nginx']['init_style'] = "init"
+  default['nginx']['worker_processes']   = cpu['total']
+  default['nginx']['binary'] = "/usr/sbin/nginx"
+  default['nginx']['sbin'] = "/usr/sbin/"
+when "smartos"
+  default['nginx']['user']       = "root"
+  default['nginx']['worker_processes']   = 8
+  default['nginx']['binary'] = "/opt/local/sbin/nginx"
+  default['nginx']['sbin'] = "/opt/local/sbin/"
 else
   default['nginx']['user']       = "www-data"
   default['nginx']['init_style'] = "init"
+  default['nginx']['binary'] = "/usr/sbin/nginx"
+  default['nginx']['sbin'] = "/usr/sbin/"
 end
 
 default['nginx']['pid'] = "/var/run/nginx.pid"
@@ -58,7 +71,6 @@ default['nginx']['gzip_types']        = [
 
 default['nginx']['keepalive']          = "on"
 default['nginx']['keepalive_timeout']  = 65
-default['nginx']['worker_processes']   = cpu['total']
 default['nginx']['worker_connections'] = 1024
 default['nginx']['server_names_hash_bucket_size'] = 64
 

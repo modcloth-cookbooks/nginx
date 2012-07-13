@@ -17,6 +17,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
+binpath = node['nginx']['sbin']
+
 directory node['nginx']['dir'] do
   owner "root"
   group "root"
@@ -38,7 +40,7 @@ end
 end
 
 %w(nxensite nxdissite).each do |nxscript|
-  template "/usr/sbin/#{nxscript}" do
+  template "#{binpath}#{nxscript}" do
     source "#{nxscript}.erb"
     mode "0755"
     owner "root"
