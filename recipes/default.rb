@@ -27,13 +27,8 @@ when 'package'
   case node['platform']
   when 'redhat','centos','scientific','amazon','oracle'
     include_recipe 'yum::epel'
-     package 'nginx'
-  when 'smartos'
-    package "nginx-#{node['nginx']['version']}"
-  else
-    package 'nginx'
   end
-  
+  package 'nginx'
   service 'nginx' do
     supports :status => true, :restart => true, :reload => true
     action :enable
