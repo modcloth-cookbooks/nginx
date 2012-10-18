@@ -1,9 +1,10 @@
 #
 # Cookbook Name:: nginx
-# Recipe:: commons
-# Author:: AJ Christensen <aj@junglist.gen.nz>
+# Attributes:: naxsi
 #
-# Copyright 2008-2012, Opscode, Inc.
+# Author:: Artiom Lunev (<artiom.lunev@gmail.com>)
+#
+# Copyright 2012, Artiom Lunev
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -18,7 +19,6 @@
 # limitations under the License.
 #
 
-include_recipe "nginx::commons_dir"
-include_recipe "nginx::commons_script"
-include_recipe "nginx::commons_conf"
-
+default['nginx']['naxsi']['version']  = "0.46-1"
+default['nginx']['naxsi']['url']      = "http://naxsi.googlecode.com/files/naxsi-#{node['nginx']['naxsi']['version']}.tgz"
+default['nginx']['naxsi']['checksum'] = "3f0cc75b9dcf79aec8d440f0452c960d"

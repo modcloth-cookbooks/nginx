@@ -19,6 +19,10 @@
 # limitations under the License.
 #
 
+if node['platform'] == 'ubuntu'
+  package 'libtool'
+end
+
 country_dat          = "#{node['nginx']['geoip']['path']}/GeoIP.dat"
 country_src_filename = ::File.basename(node['nginx']['geoip']['country_dat_url'])
 country_src_filepath = "#{Chef::Config['file_cache_path']}/#{country_src_filename}"
@@ -40,7 +44,9 @@ bash "extract_geolib" do
   cwd ::File.dirname(geolib_filepath)
   code <<-EOH
     tar xzvf #{geolib_filepath} -C #{::File.dirname(geolib_filepath)}
-    cd GeoIP-#{node['nginx']['geoip']['lib_version']} && ./configure
+    cd GeoIP-#{node['nginx']['geoip']['lib_version']}
+    which libtoolize && libtoolize -f
+    ./configure
     make && make install
   EOH
 
@@ -55,6 +61,10 @@ directory node['nginx']['geoip']['path'] do
 end
 
 remote_file country_src_filepath do
+  not_if do
+    File.exists?(country_src_filepath) &&
+    File.mtime(country_src_filepath) > Time.now - 86400
+  end
   source node['nginx']['geoip']['country_dat_url']
   checksum node['nginx']['geoip']['country_dat_checksum']
   owner "root"
@@ -73,6 +83,10 @@ if node['nginx']['geoip']['enable_city']
   city_dat  = "#{node['nginx']['geoip']['path']}/GeoLiteCity.dat"
 
   remote_file city_src_filepath do
+    not_if do
+      File.exists?(city_src_filepath) &&
+      File.mtime(city_src_filepath) > Time.now - 86400
+    end
     source node['nginx']['geoip']['city_dat_url']
     checksum node['nginx']['geoip']['city_dat_checksum']
     owner "root"
