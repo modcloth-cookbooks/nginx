@@ -2,7 +2,7 @@ maintainer        "Opscode, Inc."
 maintainer_email  "cookbooks@opscode.com"
 license           "Apache 2.0"
 description       "Installs and configures nginx"
-version           "1.0.2"
+version           "1.0.3"
 
 recipe "nginx", "Installs nginx package and sets up configuration with Debian apache style with sites-enabled/sites-available"
 recipe "nginx::source", "Installs nginx from source and sets up configuration with Debian apache style with sites-enabled/sites-available"
@@ -60,8 +60,7 @@ attribute "nginx/gzip_proxied",
 attribute "nginx/gzip_types",
   :display_name => "Nginx Gzip Types",
   :description => "Supported MIME-types for gzip",
-  :type => "array",
-  :default => [ "text/plain", "text/css", "application/x-javascript", "text/xml", "application/xml", "application/xml+rss", "text/javascript", "application/javascript", "application/json" ]
+  :default => "text/plain text/html text/css application/x-javascript text/xml application/xml application/xml+rss text/javascript"
 
 attribute "nginx/keepalive",
   :display_name => "Nginx Keepalive",
