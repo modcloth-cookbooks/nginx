@@ -45,7 +45,7 @@ when "redhat","centos","scientific","amazon","oracle","fedora"
 when "smartos"
   default['nginx']['dir'] = "/opt/local/etc/nginx"
   default['nginx']['user']       = "root"
-  default['nginx']['worker_processes']   = 8
+  default['nginx']['worker_processes']   = cpu['total']
   default['nginx']['binary'] = "/opt/local/sbin/nginx"
   default['nginx']['sbin'] = "/opt/local/sbin/"
 else
@@ -54,6 +54,8 @@ else
   default['nginx']['binary'] = "/usr/sbin/nginx"
   default['nginx']['sbin'] = "/usr/sbin/"
 end
+
+default['nginx']['group'] = node['nginx']['user']
 
 default['nginx']['pid'] = "/var/run/nginx.pid"
 
@@ -77,8 +79,13 @@ default['nginx']['gzip_types']        = [
 default['nginx']['keepalive']          = "on"
 default['nginx']['keepalive_timeout']  = 65
 default['nginx']['worker_connections'] = 1024
+default['nginx']['worker_rlimit_nofile'] = nil
+default['nginx']['multi_accept']       = false
+default['nginx']['event']              = nil
 default['nginx']['server_names_hash_bucket_size'] = 64
 
 default['nginx']['disable_access_log'] = false
 default['nginx']['install_method'] = 'package'
 default['nginx']['default_site_enabled'] = true
+default['nginx']['types_hash_max_size'] = 2048
+default['nginx']['types_hash_bucket_size'] = 64

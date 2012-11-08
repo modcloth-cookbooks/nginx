@@ -1,3 +1,4 @@
+name              "nginx"
 maintainer        "Opscode, Inc."
 maintainer_email  "cookbooks@opscode.com"
 license           "Apache 2.0"
@@ -11,11 +12,15 @@ recipe "nginx::source", "Installs nginx from source and sets up configuration wi
   supports os
 end
 
-%w{ build-essential runit bluepill yum }.each do |cb|
+%w{ build-essential }.each do |cb|
   depends cb
 end
 
 depends 'ohai', '>= 1.1.0'
+
+%w{ runit bluepill yum }.each do |cb|
+  recommends cb
+end
 
 attribute "nginx/dir",
   :display_name => "Nginx Directory",
@@ -83,6 +88,14 @@ attribute "nginx/worker_connections",
 
 attribute "nginx/server_names_hash_bucket_size",
   :display_name => "Nginx Server Names Hash Bucket Size",
+  :default => "64"
+
+attribute "nginx/types_hash_max_size",
+  :display_name => "Nginx Types Hash Max Size",
+  :default => "2048"
+
+attribute "nginx/types_hash_bucket_size",
+  :display_name => "Nginx Types Hash Bucket Size",
   :default => "64"
 
 attribute "nginx/disable_access_log",
