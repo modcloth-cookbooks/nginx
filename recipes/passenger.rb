@@ -15,20 +15,6 @@
 # limitations under the License.
 #
 
-package "ruby-devel" do
-  package_name value_for_platform( ["redhat", "centos", "scientific", "amazon", "oracle"] => {
-                                     "default" => "ruby-devel" },
-                                   ["ubuntu", "debian"] => {
-                                     "default" => "ruby-dev" } )
-  action :install
-end
-
-
-gem_package 'passenger' do
-  action :install
-  version node["nginx"]["passenger"]["version"]
-end
-
 node.default["nginx"]["passenger"]["version"] = "3.0.12"
 node.default["nginx"]["passenger"]["root"] = "/usr/lib/ruby/gems/1.8/gems/passenger-3.0.12"
 node.default["nginx"]["passenger"]["ruby"] = %x{which ruby}.chomp
@@ -42,8 +28,20 @@ node.default["nginx"]["passenger"]["max_instances_per_app"] = 0
 node.default["nginx"]["passenger"]["pool_idle_time"] = 300
 node.default["nginx"]["passenger"]["max_requests"] = 0
 
-service "nginx" do
-  supports :status => true, :restart => true, :reload => true
+packages = value_for_platform( ["redhat", "centos", "scientific", "amazon", "oracle"] => {
+                                 "default" => %w(ruby-devel curl-devel) },
+                               ["ubuntu", "debian"] => {
+                                 "default" => %w(ruby-dev curl-dev) } )
+
+packages.each do |devpkg|
+  package devpkg
+end
+
+gem_package 'rake'
+
+gem_package 'passenger' do
+  action :install
+  version node["nginx"]["passenger"]["version"]
 end
 
 template "#{node["nginx"]["dir"]}/conf.d/passenger.conf" do
@@ -64,8 +62,8 @@ template "#{node["nginx"]["dir"]}/conf.d/passenger.conf" do
     :passenger_pool_idle_time => node["nginx"]["passenger"]["pool_idle_time"],
     :passenger_max_requests => node["nginx"]["passenger"]["max_requests"]
   )
-  notifies :reload, resources(:service => "nginx")
+  notifies :reload, "service[nginx]"
 end
 
-node.run_state[:nginx_configure_flags] =
-  node.run_state[:nginx_configure_flags] | ["--add-module=#{node["nginx"]["passenger"]["root"]}/ext/nginx"]
+node.run_state['nginx_configure_flags'] =
+  node.run_state['nginx_configure_flags'] | ["--add-module=#{node["nginx"]["passenger"]["root"]}/ext/nginx"]

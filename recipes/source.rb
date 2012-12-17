@@ -42,6 +42,7 @@ node.set['nginx']['daemon_disable']  = true
 
 include_recipe "nginx::ohai_plugin"
 include_recipe "nginx::commons_dir"
+include_recipe "nginx::commons_script"
 include_recipe "build-essential"
 
 src_filepath  = "#{Chef::Config['file_cache_path'] || '/tmp'}/nginx-#{node['nginx']['version']}.tar.gz"
@@ -70,33 +71,6 @@ end
 node.run_state['nginx_force_recompile'] = false
 node.run_state['nginx_configure_flags'] =
   node['nginx']['source']['default_configure_flags'] | node['nginx']['configure_flags']
-
-node['nginx']['source']['modules'].each do |ngx_module|
-  include_recipe "nginx::#{ngx_module}"
-end
-
-configure_flags = node.run_state['nginx_configure_flags']
-nginx_force_recompile = node.run_state['nginx_force_recompile']
-
-bash "compile_nginx_source" do
-  cwd ::File.dirname(src_filepath)
-  code <<-EOH
-    tar zxf #{::File.basename(src_filepath)} -C #{::File.dirname(src_filepath)}
-    cd nginx-#{node['nginx']['version']} && ./configure #{node.run_state['nginx_configure_flags'].join(" ")}
-    make && make install
-    rm -f #{node['nginx']['dir']}/nginx.conf
-  EOH
-
-  not_if do
-    nginx_force_recompile == false &&
-      node.automatic_attrs['nginx'] &&
-      node.automatic_attrs['nginx']['version'] == node['nginx']['version'] &&
-      node.automatic_attrs['nginx']['configure_arguments'].sort == configure_flags.sort
-  end
-end
-
-node.run_state.delete(:nginx_configure_flags)
-node.run_state.delete(:nginx_force_recompile)
 
 case node['nginx']['init_style']
 when "runit"
@@ -166,7 +140,6 @@ else
   end
 end
 
-include_recipe "nginx::commons_script"
 include_recipe "nginx::commons_conf"
 
 cookbook_file "#{node['nginx']['dir']}/mime.types" do
@@ -174,9 +147,43 @@ cookbook_file "#{node['nginx']['dir']}/mime.types" do
   owner "root"
   group "root"
   mode 00644
-  notifies :reload, 'service[nginx]', :immediately
+  notifies :reload, 'service[nginx]'
 end
 
-service "nginx" do
-  action :start
+node['nginx']['source']['modules'].each do |ngx_module|
+  include_recipe "nginx::#{ngx_module}"
 end
+
+configure_flags = node.run_state['nginx_configure_flags']
+nginx_force_recompile = node.run_state['nginx_force_recompile']
+
+bash "compile_nginx_source" do
+  cwd ::File.dirname(src_filepath)
+  code <<-EOH
+    tar zxf #{::File.basename(src_filepath)} -C #{::File.dirname(src_filepath)} &&
+    cd nginx-#{node['nginx']['version']} &&
+    ./configure #{node.run_state['nginx_configure_flags'].join(" ")} &&
+    make && make install
+  EOH
+
+  not_if do
+    nginx_force_recompile == false &&
+      node.automatic_attrs['nginx'] &&
+      node.automatic_attrs['nginx']['version'] == node['nginx']['version'] &&
+      node.automatic_attrs['nginx']['configure_arguments'].sort == configure_flags.sort
+  end
+end
+
+file "#{node['nginx']['dir']}/nginx.conf" do
+  action :delete
+
+  not_if do
+    nginx_force_recompile == false &&
+      node.automatic_attrs['nginx'] &&
+      node.automatic_attrs['nginx']['version'] == node['nginx']['version'] &&
+      node.automatic_attrs['nginx']['configure_arguments'].sort == configure_flags.sort
+  end
+end
+
+node.run_state.delete('nginx_configure_flags')
+node.run_state.delete('nginx_force_recompile')
