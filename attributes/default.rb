@@ -75,7 +75,7 @@ default['nginx']['gzip_types']        = [
   "text/javascript",
   "application/javascript",
   "application/json"
-].join(" ")
+]
 
 default['nginx']['keepalive']          = "on"
 default['nginx']['keepalive_timeout']  = 65
