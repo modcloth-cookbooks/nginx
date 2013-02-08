@@ -44,7 +44,7 @@ when "redhat","centos","scientific","amazon","oracle","fedora"
   default['nginx']['sbin'] = "/usr/sbin/"
 when "smartos"
   default['nginx']['dir'] = "/opt/local/etc/nginx"
-  default['nginx']['user']       = "root"
+  default['nginx']['user'] = "www"
   default['nginx']['worker_processes']   = node['cpu'] && node['cpu']['total'] ? node['cpu']['total'] : 1
   default['nginx']['binary'] = "/opt/local/sbin/nginx"
   default['nginx']['sbin'] = "/opt/local/sbin/"
