@@ -24,7 +24,8 @@
 # changed too. It is in the source.rb file, though we recommend
 # overriding attributes by modifying a role, or the node itself.
 # default['nginx']['source']['checksum']
-default['nginx']['version'] = "1.2.3"
+default['nginx']['version'] = "1.2.6"
+default['nginx']['package_name'] = "nginx"
 default['nginx']['dir'] = "/etc/nginx"
 default['nginx']['log_dir'] = "/var/log/nginx"
 
@@ -39,6 +40,7 @@ when "debian","ubuntu"
 when "redhat","centos","scientific","amazon","oracle","fedora"
   default['nginx']['user']       = "nginx"
   default['nginx']['init_style'] = "init"
+  default['nginx']['repo_source'] = "epel"
   default['nginx']['worker_processes']   = cpu['total']
   default['nginx']['binary'] = "/usr/sbin/nginx"
   default['nginx']['sbin'] = "/usr/sbin/"
@@ -54,6 +56,10 @@ else
   default['nginx']['binary'] = "/usr/sbin/nginx"
   default['nginx']['sbin'] = "/usr/sbin/"
 end
+
+default['nginx']['upstart']['runlevels'] = '2345'
+default['nginx']['upstart']['respawn_limit'] = nil
+default['nginx']['upstart']['foreground'] = true
 
 default['nginx']['group'] = node['nginx']['user']
 
@@ -84,9 +90,13 @@ default['nginx']['worker_rlimit_nofile'] = nil
 default['nginx']['multi_accept']       = false
 default['nginx']['event']              = nil
 default['nginx']['server_names_hash_bucket_size'] = 64
+default['nginx']['sendfile'] = 'on'
 
 default['nginx']['disable_access_log'] = false
 default['nginx']['install_method'] = 'package'
 default['nginx']['default_site_enabled'] = true
 default['nginx']['types_hash_max_size'] = 2048
 default['nginx']['types_hash_bucket_size'] = 64
+
+default['nginx']['proxy_read_timeout'] = nil
+default['nginx']['client_max_body_size'] = nil

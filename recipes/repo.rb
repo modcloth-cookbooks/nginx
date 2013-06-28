@@ -1,7 +1,6 @@
-#
 # Cookbook Name:: nginx
-# Recipe:: common/dir
-# Author:: AJ Christensen <aj@junglist.gen.nz>
+# Recipe:: repo
+# Author:: Nick Rycar <nrycar@bluebox.net>
 #
 # Copyright 2008-2012, Opscode, Inc.
 #
@@ -16,33 +15,28 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-#
 
-directory node['nginx']['dir'] do
-  owner "root"
-  group "root"
-  mode 00755
-  recursive true
-end
+case node['platform_family']
+when "rhel","fedora"
+  include_recipe "yum"
 
-directory node['nginx']['log_dir'] do
-  mode 00755
-  owner node['nginx']['user']
-  action :create
-  recursive true
-end
+  yum_key "nginx" do
+    url 'http://nginx.org/keys/nginx_signing.key'
+    action :add
+  end
 
-directory File.dirname(node['nginx']['pid']) do
-  owner "root"
-  group "root"
-  mode  00755
-  recursive true
-end
+  yum_repository "nginx" do
+    description "Nginx.org Repository"
+    url node['nginx']['upstream_repository']
+  end
+when "debian"
+  include_recipe "apt"
 
-%w(sites-available sites-enabled conf.d).each do |leaf|
-  directory File.join(node['nginx']['dir'], leaf) do
-    owner "root"
-    group "root"
-    mode 00755
+  apt_repository "nginx" do
+    uri node['nginx']['upstream_repository']
+    distribution node['lsb']['codename']
+    components ["nginx"]
+    deb_src true
+    key 'http://nginx.org/keys/nginx_signing.key'
   end
 end

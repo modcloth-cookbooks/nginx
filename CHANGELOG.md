@@ -1,3 +1,74 @@
+## v1.7.0
+
+### Improvement
+
+- [COOK-3030]: The repo_source attribute should allow you to not add
+  any additional repositories to your node
+
+### Sub-task
+
+- [COOK-2738]: move nginx::passenger attributes to
+  nginx/attributes/passenger.rb
+
+## v1.6.0:
+
+### Task
+
+- [COOK-2409]: update nginx::source recipe for new `runit_service`
+  resource
+- [COOK-2877]: update nginx cookbook test-kitchen support to 1.0 (alpha)
+
+### Improvement
+
+- [COOK-1976]: nginx source should be able to configure binary path
+- [COOK-2622]: nginx: add upstart support
+- [COOK-2725]: add "configtest" subcommand in initscript
+
+### Bug
+
+- [COOK-2398]: nginx_site definition cannot be used to manage the default site
+- [COOK-2493]: Resources in nginx::source recipe always use 1.2.6
+  version, even overriding version attribute
+- [COOK-2531]: Remove usage of non-existant attribute "description"
+  for `apt_repository`
+- [COOK-2665]: nginx::source install with custom sbin_path breaks ohai data
+
+## v1.4.0:
+
+* [COOK-2183] - Install nginx package from nginxyum repo
+* [COOK-2311] - headers-more should be updated to the latest version
+* [COOK-2455] - Support sendfile option (nginx.conf)
+
+## v1.3.0:
+
+* [COOK-1979] - Passenger module requires curl-dev(el)
+* [COOK-2219] - Support `proxy_read_timeout` (in nginx.conf)
+* [COOK-2220] - Support `client_max_body_size` (in nginx.conf)
+* [COOK-2280] - Allow custom timing of nginx_site's reload
+  notification
+* [COOK-2304] - nginx cookbook should install 1.2.6 not 1.2.3 for
+  source installs
+* [COOK-2309] - checksums for geoip files need to be updated in nginx
+* [COOK-2310] - Checksum in the `nginx::upload_progress` recipe is not
+  correct
+* [COOK-2314] - nginx::passenger: Install the latest version of
+  passenger
+* [COOK-2327] - nginx: passenger recipe should find ruby via Ohai
+* [COOK-2328] - nginx: Update mime.types file to the latest
+* [COOK-2329] - nginx: Update naxsi rules to the current
+
+## v1.2.0:
+
+* [COOK-1752] - Add headers more module to the nginx cookbook
+* [COOK-2209] - nginx source recipe should create web user before
+  creating directories
+* [COOK-2221] - make nginx::source compatible with gentoo
+* [COOK-2267] - add version for runit recommends
+
+## v1.1.4:
+
+* [COOK-2168] - specify package name as an attribute
+
 ## v1.1.2:
 
 * [COOK-1766] - Nginx Source Recipe Rebuilding Source at Every Run
