@@ -36,25 +36,25 @@ when "debian","ubuntu"
   default['nginx']['init_style'] = "runit"
   default['nginx']['worker_processes']   = cpu['total']
   default['nginx']['binary'] = "/usr/sbin/nginx"
-  default['nginx']['sbin'] = "/usr/sbin/"
+  default['nginx']['sbin'] = "/usr/sbin"
 when "redhat","centos","scientific","amazon","oracle","fedora"
   default['nginx']['user']       = "nginx"
   default['nginx']['init_style'] = "init"
   default['nginx']['repo_source'] = "epel"
   default['nginx']['worker_processes']   = cpu['total']
   default['nginx']['binary'] = "/usr/sbin/nginx"
-  default['nginx']['sbin'] = "/usr/sbin/"
+  default['nginx']['sbin'] = "/usr/sbin"
 when "smartos"
   default['nginx']['dir'] = "/opt/local/etc/nginx"
   default['nginx']['user'] = "www"
   default['nginx']['worker_processes'] = node['cpu'] && node['cpu']['total'] ? node['cpu']['total'] : 1
   default['nginx']['binary'] = "/opt/local/sbin/nginx"
-  default['nginx']['sbin'] = "/opt/local/sbin/"
+  default['nginx']['sbin'] = "/opt/local/sbin"
 else
   default['nginx']['user']       = "www-data"
   default['nginx']['init_style'] = "init"
   default['nginx']['binary'] = "/usr/sbin/nginx"
-  default['nginx']['sbin'] = "/usr/sbin/"
+  default['nginx']['sbin'] = "/usr/sbin"
 end
 
 default['nginx']['upstart']['runlevels'] = '2345'
